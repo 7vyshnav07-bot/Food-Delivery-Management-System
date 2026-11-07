@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FoodFlow - Dashboard</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+
+        /* =========================================
+           LOGOUT BUTTON
+        ========================================= */
+
+        .logout-button {
+            width: calc(100% - 30px);
+            margin: 20px 15px 10px;
+            padding: 12px 15px;
+
+            border: 1px solid rgba(231, 76, 60, 0.25);
+            border-radius: 9px;
+
+            background: rgba(231, 76, 60, 0.08);
+            color: #e74c3c;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .logout-button:hover {
+            background: #e74c3c;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =========================================
+         SIDEBAR
+    ========================================== -->
+
+    <aside class="sidebar">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <img src="/assets/foodflow-logo.png"
+                 alt="FoodFlow Logo"
+                 class="foodflow-logo">
+
+        </div>
+
+
+        <!-- SIDEBAR TOGGLE BUTTON -->
+
+        <button
+            id="sidebarToggle"
+            class="sidebar-toggle">
+
+            ☰
+
+        </button>
+
+
+        <!-- NAVIGATION -->
+
+        <nav>
+
+            <a href="/index.html"
+               class="nav-item active">
+
+                🏠 Dashboard
+
+            </a>
+
+
+            <a href="/orders.html"
+               class="nav-item">
+
+                📦 Orders
+
+            </a>
+
+
+            <a href="/orders_add.html"
+               class="nav-item">
+
+                ➕ Add Order
+
+            </a>
+
+
+            <a href="/orders_delete.html"
+               class="nav-item">
+
+                ❌ Cancel Order
+
+            </a>
+
+
+            <a href="/dsa.html"
+               class="nav-item">
+
+                🌳 DSA Operations
+
+            </a>
+
+
+            <a href="/traverse.html"
+               class="nav-item">
+
+                🔄 Traverse Orders
+
+            </a>
+
+
+            <a href="/process_orders.html"
+               class="nav-item">
+
+                🚚 Process Orders
+
+            </a>
+
+
+            <a href="/cancelled_orders.html"
+               class="nav-item">
+
+                ↩️ Cancelled Orders
+
+            </a>
+            <a href="/search_sort.html" class="nav-item">
+    🔎 Search & Sort
+</a>
+
+<a href="/algorithms.html" class="nav-item">
+    🧮 Algorithm
+</a>
+
+        </nav>
+
+
+        <!-- LOGOUT BUTTON -->
+
+        <button
+            type="button"
+            class="logout-button"
+            onclick="logoutAdmin()">
+
+            🚪 Logout
+
+        </button>
+
+
+    </aside>
+
+
+    <!-- =========================================
+         MAIN CONTENT
+    ========================================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>
+                    Dashboard
+                </h1>
+
+                <p>
+                    Food Delivery Management System
+                </p>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================
+             STATISTICS
+        ====================================== -->
+
+        <section class="stats-grid">
+
+
+            <!-- TOTAL ORDERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📦
+                </div>
+
+                <div>
+
+                    <h3 id="totalOrders">
+                        0
+                    </h3>
+
+                    <p>
+                        Total Orders
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- PENDING ORDERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⏳
+                </div>
+
+                <div>
+
+                    <h3 id="pendingOrders">
+                        0
+                    </h3>
+
+                    <p>
+                        Pending Orders
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- PROCESSING ORDERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🚚
+                </div>
+
+                <div>
+
+                    <h3 id="processingOrders">
+                        0
+                    </h3>
+
+                    <p>
+                        Processing
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CANCELLED ORDERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ↩️
+                </div>
+
+                <div>
+
+                    <h3 id="cancelledOrders">
+                        0
+                    </h3>
+
+                    <p>
+                        Cancelled
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="content-card" style="margin-top:24px">
+            <div class="card-header"><div><h2>Food Rescue</h2><p>Create and manage discounted pickup deals</p></div></div>
+            <form id="rescueForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0">
+                <input type="hidden" name="dealId" id="rescueDealId">
+                <select name="shop" id="rescueShop" required><option value="">Choose shop</option></select>
+                <select name="item" id="rescueItem" required><option value="">Choose item</option></select>
+                <input name="originalPrice" type="number" min="0.01" step="0.01" placeholder="Original price" required>
+                <input name="discountedPrice" type="number" min="0.01" step="0.01" placeholder="Discounted price" required>
+                <input name="quantity" type="number" min="1" step="1" placeholder="Quantity" required>
+                <input name="deadline" type="datetime-local" required>
+                <button class="green-button" type="submit">Save deal</button><button type="button" class="secondary-button" id="rescueReset">Clear</button>
+            </form>
+            <p id="rescueAdminStatus" role="status"></p>
+            <p id="rescueImpact">Loading rescue impact…</p>
+            <div class="table-container"><table><thead><tr><th>Deal</th><th>Shop</th><th>Price</th><th>Qty</th><th>Pickup deadline</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rescueDealsTable"></tbody></table></div>
+        </section>
+
+
+        <!-- =====================================
+             RECENT ORDERS
+        ====================================== -->
+
+        <section class="content-card">
+
+
+            <!-- CARD HEADER -->
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        Recent Orders
+                    </h2>
+
+                    <p>
+                        Orders currently stored in the system
+                    </p>
+
+                </div>
+
+<div class="orders-sort-control">
+    <label for="dashboardSort">Sort by</label>
+    <select id="dashboardSort" onchange="sortDashboardOrders()">
+        <option value="orderId">Order ID</option>
+        <option value="totalAsc">Total: Low to High</option>
+        <option value="total">Total: High to Low</option>
+    </select>
+</div>
+                <a
+                    href="/orders_add.html"
+                    class="green-button">
+
+                    + Add Order
+
+                </a>
+
+            </div>
+
+
+
+
+            <!-- ORDERS TABLE -->
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            Order ID
+                        </th>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Restaurant
+                        </th>
+
+                        <th>
+                            Food
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody id="ordersTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================
+   LOAD DASHBOARD
+========================================= */
+
+async function loadDashboard() {
+
+    try {
+
+        /* -------------------------------------
+           LOAD STATISTICS
+        ------------------------------------- */
+
+        const statsResponse =
+            await fetch("/api/stats");
+
+
+        const stats =
+            await statsResponse.json();
+
+
+        document.getElementById("totalOrders")
+            .textContent =
+            stats.totalOrders;
+
+
+        document.getElementById("pendingOrders")
+            .textContent =
+            stats.pendingOrders;
+
+
+        document.getElementById("processingOrders")
+            .textContent =
+            stats.processingOrders;
+
+
+        document.getElementById("cancelledOrders")
+            .textContent =
+            stats.cancelledOrders;
+
+
+        
+        // LOAD AND DISPLAY ORDERS
+        await loadDashboardOrders();
+
+
+        /* -------------------------------------
+           DISPLAY ORDERS
+        ------------------------------------- */
+
+        orders.forEach(order => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            ${order.orderId}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+                        ${order.customerName}
+                    </td>
+
+
+                    <td>
+                        ${order.restaurant}
+                    </td>
+
+
+                    <td>
+                        ${order.foodItem}${order.rescueOrder ? ' <strong>· Food Rescue</strong>' : ''}
+                    </td>
+
+
+                    <td>
+                        ₹${Number(order.total).toFixed(2)}
+                    </td>
+
+
+                    <td>
+
+                        <span class="status ${order.status.toLowerCase()}">
+
+                            ${order.status}
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load dashboard:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD AND RENDER DASHBOARD ORDERS
+========================================= */
+
+async function loadDashboardOrders() {
+    try {
+        const response = await fetch("/api/orders");
+        const orders = await response.json();
+
+        renderDashboardOrders(orders);
+    } catch (error) {
+        console.error("Failed to load orders:", error);
+    }
+}
+
+function renderDashboardOrders(orders) {
+    const table = document.getElementById("ordersTable");
+    table.innerHTML = "";
+
+    orders.forEach(order => {
+        table.innerHTML += `
+            <tr>
+                <td><strong>${order.orderId}</strong></td>
+                <td>${order.customerName}</td>
+                <td>${order.restaurant}</td>
+                <td>${order.foodItem}${order.rescueOrder ? ' <strong>· Food Rescue</strong>' : ''}</td>
+                <td>₹${Number(order.total).toFixed(2)}</td>
+                <td>
+                    <span class="status ${order.status.toLowerCase()}">
+                        ${order.status}
+                    </span>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+/* =========================================
+   SORT DASHBOARD ORDERS USING MERGE SORT
+========================================= */
+
+async function sortDashboardOrders() {
+    const sortValue = document.getElementById("dashboardSort").value;
+
+    const sortBy = sortValue === "totalAsc" ? "total" : sortValue;
+
+    try {
+        const response = await fetch(
+            "/api/sort?by=" + encodeURIComponent(sortBy)
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            alert("Unable to sort orders.");
+            return;
+        }
+
+        const sortedOrders = data.orders;
+
+        // Backend sorts total amount from highest to lowest.
+        // Reverse it for lowest to highest.
+        if (sortValue === "totalAsc") {
+            sortedOrders.reverse();
+        }
+
+        renderDashboardOrders(sortedOrders);
+    } catch (error) {
+        console.error("Sorting failed:", error);
+        alert("Could not sort orders. Check whether FoodFlow is running.");
+    }
+}
+
+
+/* =========================================
+   SIDEBAR TOGGLE
+========================================= */
+
+const sidebarToggle =
+    document.getElementById("sidebarToggle");
+
+
+const app =
+    document.querySelector(".app");
+
+
+sidebarToggle.addEventListener(
+    "click",
+    function () {
+
+        app.classList.toggle(
+            "sidebar-collapsed"
+        );
+
+    }
+);
+
+
+
+/* =========================================
+   ADMIN LOGOUT
+========================================= */
+
+function logoutAdmin() {
+
+    /* Remove admin login session */
+
+    sessionStorage.removeItem(
+        "foodflow-admin"
+    );
+
+
+    /* Redirect to login page */
+
+    window.location.href =
+        "/login.html";
+
+}
+
+
+
+/* =========================================
+   START DASHBOARD
+========================================= */
+
+loadDashboard();
+
+let rescueCatalog = [];
+async function initRescueAdmin() {
+    const menu = await (await fetch('/api/customer/menu')).json();
+    rescueCatalog = menu.shops || [];
+    const shopSelect = document.getElementById('rescueShop');
+    rescueCatalog.forEach(s => { const o=document.createElement('option'); o.value=s.name; o.textContent=s.name; shopSelect.appendChild(o); });
+    shopSelect.onchange = () => { const s=rescueCatalog.find(x=>x.name===shopSelect.value); const item=document.getElementById('rescueItem'); item.innerHTML='<option value="">Choose item</option>'; (s?.items||[]).forEach(i=>{const o=document.createElement('option');o.value=i.name;o.textContent=i.name;item.appendChild(o);}); };
+    document.getElementById('rescueForm').onsubmit = async e => { e.preventDefault(); const r=await fetch('/api/rescue/deals',{method:'POST',body:new URLSearchParams(new FormData(e.currentTarget))}); const x=await r.json(); document.getElementById('rescueAdminStatus').textContent=x.success?'Deal saved.':x.message; if(x.success){e.currentTarget.reset();document.getElementById('rescueDealId').value='';loadRescueAdmin();} };
+    document.getElementById('rescueReset').onclick=()=>{document.getElementById('rescueForm').reset();document.getElementById('rescueDealId').value='';};
+    loadRescueAdmin();
+}
+async function loadRescueAdmin(){
+    const data=await (await fetch('/api/rescue/deals')).json(); const body=document.getElementById('rescueDealsTable'); body.innerHTML='';
+    (data.deals||[]).forEach(d=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${d.item}</td><td>${d.shop}</td><td>₹${Number(d.discountedPrice).toFixed(2)} <small>(was ₹${Number(d.originalPrice).toFixed(2)})</small></td><td>${d.quantity}</td><td>${new Date(d.deadline).toLocaleString()}</td><td>${d.active?'Active':'Inactive'}</td><td></td>`; const actions=tr.lastElementChild; if(d.active){const edit=document.createElement('button');edit.className='secondary-button';edit.textContent='Edit';edit.onclick=()=>{const f=document.getElementById('rescueForm'); document.getElementById('rescueDealId').value=d.id;f.elements.shop.value=d.shop;document.getElementById('rescueShop').onchange();f.elements.item.value=d.item;f.elements.originalPrice.value=d.originalPrice;f.elements.discountedPrice.value=d.discountedPrice;f.elements.quantity.value=d.quantity;f.elements.deadline.value=d.deadline.slice(0,16);f.scrollIntoView({behavior:'smooth'});};actions.appendChild(edit);const off=document.createElement('button');off.className='secondary-button';off.textContent='Deactivate';off.onclick=async()=>{await fetch('/api/rescue/deactivate',{method:'POST',body:new URLSearchParams({dealId:d.id})});loadRescueAdmin();};actions.appendChild(off);} body.appendChild(tr);});
+    const impact=await (await fetch('/api/rescue/impact')).json();document.getElementById('rescueImpact').textContent=`Meals rescued: ${impact.mealsRescued} · Customer savings: ₹${Number(impact.customerSavings).toFixed(2)}`;
+}
+initRescueAdmin().catch(e=>document.getElementById('rescueAdminStatus').textContent='Could not load rescue deals.');
+
+
+</script>
+
+
+</body>
+
+</html>

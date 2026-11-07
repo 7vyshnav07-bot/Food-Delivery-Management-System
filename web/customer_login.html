@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodFlow - Customer Login</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .customer-login { min-height:100vh; display:grid; place-items:center; padding:24px; position:relative; z-index:1; }
+        .customer-login-card { width:min(100%,430px); padding:32px; background:rgba(19,25,21,.92); border:1px solid rgba(255,255,255,.09); border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.28); }
+        .customer-login-card h1 { margin:0 0 8px; color:#fff; }
+        .customer-login-card p { color:#a9b0b8; margin:0 0 24px; line-height:1.6; }
+        .customer-login-card label { display:block; margin:16px 0 7px; color:#d9dee3; font-size:14px; }
+        .customer-login-card input { width:100%; min-height:44px; padding:10px 12px; color:#fff; background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.12); border-radius:8px; }
+        .customer-login-card .green-button { width:100%; margin-top:20px; }
+        #loginError { min-height:20px; color:#ff8d82; margin-top:12px; }
+        .login-links { display:flex; justify-content:space-between; gap:12px; margin-top:18px; color:#65df8c; font-size:14px; }
+    </style>
+</head>
+<body>
+<main class="customer-login">
+    <form id="loginForm" class="customer-login-card">
+        <h1>Food<span style="color:#32c76a">Flow</span></h1>
+        <p>Sign in to browse restaurants and place your order.</p>
+        <label for="username">Username</label>
+        <input id="username" name="username" autocomplete="username" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button class="green-button" type="submit">Sign in</button>
+        <div id="loginError" role="alert"></div>
+        <div class="login-links"><a href="/login.html">Admin login</a></div>
+    </form>
+</main>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const error = document.getElementById('loginError');
+    error.textContent = '';
+    const body = new URLSearchParams(new FormData(event.currentTarget));
+    try {
+        const response = await fetch('/api/customer/login', { method:'POST', body });
+        const result = await response.json();
+        if (!result.success) { error.textContent = result.message || 'Invalid username or password.'; return; }
+        sessionStorage.setItem('foodflow-customer', 'true');
+        window.location.href = '/customer_order.html';
+    } catch (_) { error.textContent = 'Unable to connect to the server.'; }
+});
+</script>
+</body>
+</html>

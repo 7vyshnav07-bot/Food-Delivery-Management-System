@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodFlow - Place an Order</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .customer-wrap { width:min(900px,100%); margin:36px auto; }
+        .customer-card { padding:24px; background:rgba(19,25,21,.88); border:1px solid rgba(255,255,255,.08); border-radius:12px; }
+        .customer-card h2 { margin:0 0 8px; }
+        .customer-note { margin:0 0 20px; color:#a9b0b8; }
+        .customer-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+        .customer-form label { display:block; margin-bottom:7px; color:#d9dee3; font-size:14px; }
+        .customer-form input,.customer-form select { width:100%; min-height:42px; padding:9px 11px; color:#fff; background:#17201a; border:1px solid rgba(255,255,255,.12); border-radius:8px; }
+        .customer-form option { color:#fff; background:#17201a; }
+        .customer-form .wide { grid-column:1/-1; }
+        .customer-actions { display:flex; align-items:center; gap:12px; margin-top:20px; }
+        .customer-status { margin-top:18px; line-height:1.7; }
+        .customer-status.error { color:#ff8d82; }
+        .customer-status.success { color:#65df8c; }
+        .customer-nav { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+        .customer-nav button { border:0; cursor:pointer; }
+        @media(max-width:600px) { .customer-wrap{margin:18px auto}.customer-card{padding:18px}.customer-form{grid-template-columns:1fr}.customer-form .wide{grid-column:auto}.customer-nav{align-items:flex-start;flex-direction:column} }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="logo"><img src="/assets/foodflow-logo.png" alt="FoodFlow Logo" class="foodflow-logo"></div>
+        <nav><a href="/customer_order.html" class="nav-item active">🍽️ Order Food</a><a href="/login.html" class="nav-item">🔐 Admin Login</a></nav>
+    </aside>
+    <main class="main-content">
+        <header class="topbar customer-nav"><div><h1>Place an Order</h1><p>Choose a restaurant and a menu item</p></div><button class="secondary-button" id="logoutButton">Log out</button></header>
+        <section class="customer-wrap"><div class="customer-card" style="margin-bottom:22px">
+            <h2>Food Rescue Deals</h2><p class="customer-note">Discounted surplus meals for pickup before closing.</p>
+            <div id="rescueImpactCustomer" class="customer-note"></div><div id="rescueDeals" class="customer-form"></div>
+            <div id="rescueStatus" class="customer-status" role="status"></div>
+        </div><div class="customer-card">
+            <h2>Build your order</h2>
+            <p class="customer-note">Sample menu and prices. Delivery charge follows FoodFlow’s existing calculation: ₹30 + ₹10 per km (sample distance 5 km).</p>
+            <form id="orderForm" class="customer-form">
+                <div><label for="restaurant">Restaurant</label><select id="restaurant" name="restaurant" required><option value="">Loading restaurants…</option></select></div>
+                <div><label for="foodItem">Food item</label><select id="foodItem" name="foodItem" required><option value="">Select an item</option></select></div>
+                <div><label for="quantity">Quantity</label><input id="quantity" name="quantity" type="number" min="1" max="99" value="1" required></div>
+                <div><label for="paymentMethod">Payment method</label><select id="paymentMethod" name="paymentMethod"><option>UPI</option><option>Card</option><option>Cash</option></select></div>
+                <div><label for="customerName">Your name</label><input id="customerName" name="customerName" maxlength="80" required></div>
+                <div><label for="phone">Phone</label><input id="phone" name="phone" inputmode="tel" maxlength="20" required></div>
+                <div class="wide"><label for="address">Delivery area</label><select id="address" name="address" required><option value="">Select a delivery area</option></select></div>
+                <div class="wide customer-actions"><button type="submit" class="green-button">Place order</button><a href="/login.html" class="secondary-button">Admin portal</a></div>
+            </form>
+            <div id="orderStatus" class="customer-status" role="status"></div>
+        </div></section>
+    </main>
+</div>
+<script>
+if (sessionStorage.getItem('foodflow-customer') !== 'true') window.location.replace('/customer_login.html');
+let shops = [];
+const shopSelect = document.getElementById('restaurant');
+const itemSelect = document.getElementById('foodItem');
+const statusBox = document.getElementById('orderStatus');
+function fillItems() {
+    const shop = shops.find(entry => entry.name === shopSelect.value);
+    itemSelect.innerHTML = '<option value="">Select an item</option>';
+    (shop?.items || []).forEach(item => {
+        const option = document.createElement('option'); option.value = item.name;
+        option.textContent = `${item.name} — ₹${Number(item.price).toFixed(2)}`; itemSelect.appendChild(option);
+    });
+}
+async function loadMenu() {
+    const response = await fetch('/api/customer/menu'); const result = await response.json();
+    if (!result.success) throw new Error('Could not load restaurants.');
+    shops = result.shops;
+    shopSelect.innerHTML = '<option value="">Select a restaurant</option>';
+    shops.forEach(shop => { const option = document.createElement('option'); option.value=shop.name; option.textContent=shop.name; shopSelect.appendChild(option); });
+    const areaSelect = document.getElementById('address');
+    result.areas.forEach(area => { const option=document.createElement('option'); option.value=area; option.textContent=area; areaSelect.appendChild(option); });
+    loadRescueDeals();
+}
+async function loadRescueDeals(){
+    const response=await fetch('/api/rescue/deals');const data=await response.json();const root=document.getElementById('rescueDeals');root.innerHTML='';
+    const available=(data.deals||[]).filter(d=>d.active&&d.quantity>0&&new Date(d.deadline).getTime()>=Date.now());
+    available.forEach(d=>{const card=document.createElement('article');card.className='content-card';card.style.padding='16px';card.innerHTML=`<h3>${d.item}</h3><p>${d.shop}</p><p><s>₹${Number(d.originalPrice).toFixed(2)}</s> <strong>₹${Number(d.discountedPrice).toFixed(2)}</strong> · Save ₹${(d.originalPrice-d.discountedPrice).toFixed(2)}</p><p>${d.quantity} available · Pickup by ${new Date(d.deadline).toLocaleString()}</p><label>Quantity <input type="number" min="1" max="${d.quantity}" value="1" data-qty></label><button type="button" class="green-button" data-order>Order for pickup</button>`;card.querySelector('[data-order]').onclick=async()=>{const q=card.querySelector('[data-qty]').value;const f=document.getElementById('orderForm');const payload=new URLSearchParams({dealId:d.id,quantity:q,customerName:f.elements.customerName.value,phone:f.elements.phone.value,paymentMethod:f.elements.paymentMethod.value});const result=await (await fetch('/api/rescue/order',{method:'POST',body:payload})).json();const status=document.getElementById('rescueStatus');status.className='customer-status '+(result.success?'success':'error');status.textContent=result.success?`Rescue order ${result.orderId} confirmed for pickup. Total: ₹${Number(result.total).toFixed(2)}.`:result.message; if(result.success)loadRescueDeals();};root.appendChild(card);});
+    if(!available.length)root.textContent='No active rescue deals right now.';
+    const impact=await (await fetch('/api/rescue/impact')).json();document.getElementById('rescueImpactCustomer').textContent=`FoodFlow customers have rescued ${impact.mealsRescued} meals and saved ₹${Number(impact.customerSavings).toFixed(2)}.`;
+}
+shopSelect.addEventListener('change', fillItems);
+document.getElementById('logoutButton').addEventListener('click', () => { sessionStorage.removeItem('foodflow-customer'); window.location.href='/customer_login.html'; });
+loadMenu().catch(error => { statusBox.className='customer-status error'; statusBox.textContent=error.message; });
+document.getElementById('orderForm').addEventListener('submit', async event => {
+    event.preventDefault(); statusBox.className='customer-status'; statusBox.textContent='';
+    const quantity = Number(document.getElementById('quantity').value);
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) { statusBox.className='customer-status error'; statusBox.textContent='Quantity must be a whole number between 1 and 99.'; return; }
+    try {
+        const response = await fetch('/api/customer/order', { method:'POST', body:new URLSearchParams(new FormData(event.currentTarget)) });
+        const result = await response.json();
+        if (!result.success) { statusBox.className='customer-status error'; statusBox.textContent=result.message || 'Unable to place order.'; return; }
+        statusBox.className='customer-status success';
+        statusBox.textContent=`Order ${result.orderId} confirmed. Delivery: ₹${Number(result.deliveryCharge).toFixed(2)}. Total: ₹${Number(result.total).toFixed(2)}. The order is now available to the admin.`;
+        document.getElementById('quantity').value='1';
+    } catch (_) { statusBox.className='customer-status error'; statusBox.textContent='Unable to connect to the server.'; }
+});
+</script>
+</body>
+</html>

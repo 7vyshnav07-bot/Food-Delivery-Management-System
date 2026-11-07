@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FoodFlow - Orders</title>
+
+    <link rel="stylesheet"
+          href="/css/style.css">
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <img src="/assets/foodflow-logo.png"
+                 alt="FoodFlow Logo"
+                 class="foodflow-logo">
+
+        </div>
+ <button id="sidebarToggle"
+                class="sidebar-toggle">
+
+            ☰
+
+        </button>
+
+
+        <nav>
+
+            <a href="/index.html"
+               class="nav-item">
+                🏠 Dashboard
+            </a>
+
+
+            <a href="/orders.html"
+               class="nav-item active">
+                📦 Orders
+            </a>
+
+
+            <a href="/orders_add.html"
+               class="nav-item">
+                ➕ Add Order
+            </a>
+
+
+            <a href="/orders_delete.html"
+               class="nav-item">
+                ❌ Cancel Order
+            </a>
+ <a href="/dsa.html" class="nav-item">
+    🌳 DSA Operations
+</a>
+
+            <a href="/traverse.html"
+               class="nav-item">
+                🔄 Traverse Orders
+            </a>
+
+
+            <a href="/process_orders.html"
+               class="nav-item">
+                🚚 Process Orders
+            </a>
+
+
+            <a href="/cancelled_orders.html"
+               class="nav-item">
+                ↩️ Cancelled Orders
+            </a>
+   <a href="/search_sort.html" class="nav-item">
+    🔎 Search & Sort
+</a>
+
+<a href="/algorithms.html" class="nav-item">
+    🧮 Algorithm
+</a>
+
+        </nav>
+
+
+        
+        </nav>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main-content">
+
+
+        <!-- ================= TOP BAR ================= -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>
+                    All Orders
+                </h1>
+
+                <p>
+                    View all orders stored in the system
+                </p>
+
+            </div>
+
+
+            <!-- SEARCH BAR -->
+
+            <div class="order-search">
+
+    <input
+        type="text"
+        id="searchOrderId"
+        placeholder="Search Order ID..."
+        autocomplete="off"
+        onkeydown="handleSearchKey(event)"
+    >
+
+    <button
+        type="button"
+        class="search-btn"
+        onclick="searchOrder()"
+        title="Search">
+        🔍
+    </button>
+
+    <button
+        type="button"
+        class="clear-search"
+        onclick="clearSearch()"
+        title="Clear">
+        ×
+    </button>
+
+</div>
+
+        </header>
+
+
+
+        <!-- ================= ORDER CARD ================= -->
+
+        <section class="content-card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        Order Records
+                    </h2>
+
+                </div>
+
+
+                <a href="/orders_add.html"
+                   class="green-button">
+
+                    + Add Order
+
+                </a>
+
+            </div>
+
+
+
+            <!-- ================= TABLE ================= -->
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Order ID</th>
+
+                        <th>Customer</th>
+
+                        <th>Phone</th>
+
+                        <th>Restaurant</th>
+
+                        <th>Food</th>
+
+                        <th>Type</th>
+
+                        <th>Qty</th>
+
+                        <th>Price</th>
+
+                        <th>Delivery</th>
+
+                        <th>Total</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody id="ordersTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+
+/* ==========================================
+   LOAD ALL ORDERS
+   ========================================== */
+
+async function loadOrders() {
+
+    try {
+
+        const response =
+            await fetch("/api/orders");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load orders"
+            );
+
+        }
+
+
+        const orders =
+            await response.json();
+
+
+        displayOrders(orders);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        const table =
+            document.getElementById(
+                "ordersTable"
+            );
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="11"
+                    style="text-align:center;">
+
+                    ❌ Unable to load orders
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+/* ==========================================
+   DISPLAY ORDERS
+   ========================================== */
+
+function displayOrders(orders) {
+
+    const table =
+        document.getElementById(
+            "ordersTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (!orders || orders.length === 0) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="11"
+                    style="text-align:center; padding:25px;">
+
+                    No orders found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    orders.forEach(order => {
+
+        table.innerHTML += `
+
+            <tr>
+
+                <td>
+                    <strong>
+                        ${order.orderId}
+                    </strong>
+                </td>
+
+
+                <td>
+                    ${order.customerName}
+                </td>
+
+
+                <td>
+                    ${order.phone}
+                </td>
+
+
+                <td>
+                    ${order.restaurant}
+                </td>
+
+
+                <td>
+                    ${order.foodItem}
+                </td>
+
+                <td>${order.rescueOrder ? '<strong>Food Rescue</strong>' : 'Regular'}</td>
+
+
+                <td>
+                    ${order.quantity}
+                </td>
+
+
+                <td>
+                    ₹${Number(
+                        order.foodPrice
+                    ).toFixed(2)}
+                </td>
+
+
+                <td>
+                    ₹${Number(
+                        order.deliveryCharge
+                    ).toFixed(2)}
+                </td>
+
+
+                <td>
+
+                    <strong>
+                        ₹${Number(
+                            order.total
+                        ).toFixed(2)}
+                    </strong>
+
+                </td>
+
+
+                <td>
+
+                    <span class="status ${String(
+                        order.status
+                    ).toLowerCase()}">
+
+                        ${order.status}
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+
+/* ==========================================
+   SEARCH ORDER USING BST
+   ========================================== */
+
+async function searchOrder() {
+
+    const input =
+        document.getElementById(
+            "searchOrderId"
+        );
+
+
+    const orderId =
+        input.value.trim();
+
+
+    if (orderId === "") {
+
+        loadOrders();
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/tree/search",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+
+                    body:
+                        "orderId=" +
+                        encodeURIComponent(
+                            orderId
+                        )
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        /* =========================
+           ORDER FOUND
+           ========================= */
+
+        if (result.success && result.order) {
+
+            displayOrders([
+                result.order
+            ]);
+
+            return;
+
+        }
+
+
+        /* =========================
+           ORDER NOT FOUND
+           ========================= */
+
+        const table =
+            document.getElementById(
+                "ordersTable"
+            );
+
+
+        table.innerHTML = `
+
+            <tr>
+
+            <td colspan="11"
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    ">
+
+                    <div style="
+                        font-size:30px;
+                        margin-bottom:10px;
+                    ">
+                        🔍
+                    </div>
+
+                    <strong>
+                        Order "${orderId}" not found
+                    </strong>
+
+                    <div style="
+                        margin-top:8px;
+                        color:#888;
+                    ">
+                        No matching order was found
+                        in the Binary Search Tree.
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        const table =
+            document.getElementById(
+                "ordersTable"
+            );
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="11"
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    ">
+
+                    ❌ Error while searching
+                    for the order.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+/* ==========================================
+   ENTER KEY SEARCH
+   ========================================== */
+
+function handleSearchKey(event) {
+
+    if (event.key === "Enter") {
+
+        searchOrder();
+
+    }
+
+}
+
+
+
+/* ==========================================
+   CLEAR SEARCH
+   ========================================== */
+
+function clearSearch() {
+
+    document.getElementById(
+        "searchOrderId"
+    ).value = "";
+
+
+    loadOrders();
+
+}
+
+
+
+/* ==========================================
+   LOAD ORDERS WHEN PAGE OPENS
+   ========================================== */
+
+loadOrders();
+
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+    <title>FoodFlow - DSA Operations</title>
+
+
+
+    <link rel="stylesheet" href="/css/style.css">
+
+<style>
+
+/* =========================================================
+   FOODFLOW DSA GRAPH THEME
+   ========================================================= */
+
+/* DSA badge */
+
+.dsa-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    border-radius: 20px;
+
+    background: rgba(50, 199, 106, 0.12);
+    border: 1px solid rgba(50, 199, 106, 0.25);
+
+    color: #32c76a;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   GRAPH INFORMATION BOX
+   ========================================================= */
+
+.graph-info {
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 15px;
+
+    padding: 17px 19px;
+
+    margin-bottom: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(50, 199, 106, 0.10),
+            rgba(50, 199, 106, 0.03)
+        );
+
+    border: 1px solid rgba(50, 199, 106, 0.20);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+
+.graph-info-icon {
+
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: rgba(50, 199, 106, 0.15);
+
+    border: 1px solid rgba(50, 199, 106, 0.20);
+
+    font-size: 18px;
+}
+
+
+.graph-info strong {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #32c76a;
+
+    font-size: 14px;
+}
+
+
+.graph-info p {
+
+    margin: 0;
+
+    color: #aeb5bc;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   GRAPH SECTION TITLE
+   ========================================================= */
+
+.graph-section-title {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+
+.graph-section-title h3 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 17px;
+}
+
+
+#graphVertexCount {
+
+    padding: 6px 11px;
+
+    border-radius: 15px;
+
+    background: rgba(50, 199, 106, 0.10);
+
+    border: 1px solid rgba(50, 199, 106, 0.18);
+
+    color: #32c76a;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   ADJACENCY GRID
+   ========================================================= */
+
+.adjacency-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(280px, 1fr)
+        );
+
+    gap: 15px;
+
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   GRAPH NODE CARDS
+   ========================================================= */
+
+.adjacency-item {
+
+    padding: 19px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.075),
+            rgba(255, 255, 255, 0.025)
+        );
+
+    border: 1px solid
+        rgba(255, 255, 255, 0.10);
+
+    border-radius: 13px;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+
+.adjacency-item:hover {
+
+    transform: translateY(-4px);
+
+    border-color:
+        rgba(50, 199, 106, 0.45);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(50, 199, 106, 0.12),
+            rgba(255, 255, 255, 0.035)
+        );
+
+    box-shadow:
+        0 12px 30px
+        rgba(50, 199, 106, 0.12);
+}
+
+
+/* =========================================================
+   VERTEX NAME
+   ========================================================= */
+
+.vertex-name {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-bottom: 13px;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 600;
+}
+
+
+.vertex-icon {
+
+    color: #32c76a;
+
+    font-size: 13px;
+
+    text-shadow:
+        0 0 8px
+        rgba(50, 199, 106, 0.55);
+}
+
+
+/* =========================================================
+   CONNECTIONS
+   ========================================================= */
+
+.vertex-connections {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    padding-left: 20px;
+}
+
+
+/* =========================================================
+   CONNECTED GRAPH NODE
+   ========================================================= */
+
+.graph-node {
+
+    padding: 7px 11px;
+
+    border-radius: 7px;
+
+    background:
+        rgba(50, 199, 106, 0.09);
+
+    border:
+        1px solid
+        rgba(50, 199, 106, 0.18);
+
+    color: #cdd5d9;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    transition: all 0.2s ease;
+}
+
+
+.graph-node:hover {
+
+    background:
+        rgba(50, 199, 106, 0.17);
+
+    border-color:
+        rgba(50, 199, 106, 0.35);
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   GRAPH ARROW
+   ========================================================= */
+
+.graph-arrow {
+
+    color: #32c76a;
+
+    font-weight: bold;
+
+    font-size: 14px;
+
+    text-shadow:
+        0 0 7px
+        rgba(50, 199, 106, 0.45);
+}
+
+
+/* =========================================================
+   GRAPH EMPTY / LOADING
+   ========================================================= */
+
+.no-neighbors,
+.graph-loading,
+.graph-empty {
+
+    color: #8f999f;
+
+    font-size: 12px;
+}
+
+
+.graph-loading,
+.graph-empty,
+.graph-error {
+
+    padding: 25px;
+
+    text-align: center;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    border-radius: 10px;
+}
+
+
+.graph-error {
+
+    color: #ff6b6b;
+
+    border-color:
+        rgba(231, 76, 60, 0.25);
+
+    background:
+        rgba(231, 76, 60, 0.07);
+}
+
+
+/* =========================================================
+   BFS UI
+   ========================================================= */
+
+.bfs-controls {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.bfs-input-group {
+
+    flex: 1;
+
+    max-width: 400px;
+}
+
+
+.bfs-input-group label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #cdd5d9;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.bfs-input-group select {
+
+    width: 100%;
+
+    height: 42px;
+
+    padding: 0 12px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+
+    border-radius: 8px;
+
+    background:
+        rgba(255, 255, 255, 0.06);
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+
+.bfs-input-group select:focus {
+
+    border-color: #32c76a;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(50, 199, 106, 0.10);
+}
+
+
+.bfs-input-group select option {
+
+    background: #1c2328;
+
+    color: #ffffff;
+}
+
+
+.bfs-start-info {
+
+    margin-bottom: 15px;
+
+    color: #9ca6ac;
+
+    font-size: 13px;
+}
+
+
+.bfs-start-info strong {
+
+    color: #32c76a;
+}
+
+
+/* =========================================================
+   BFS PATH
+   ========================================================= */
+
+.bfs-path {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+
+.bfs-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 9px 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #32c76a,
+            #27ae5d
+        );
+
+    color: #ffffff;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 5px 15px
+        rgba(50, 199, 106, 0.20);
+}
+
+
+.bfs-number {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 20px;
+
+    height: 20px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.20);
+
+    font-size: 11px;
+}
+
+
+.bfs-arrow {
+
+    color: #32c76a;
+
+    font-weight: bold;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .bfs-controls {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .bfs-input-group {
+
+        max-width: none;
+    }
+
+
+    .bfs-controls .green-button {
+
+        width: 100%;
+    }
+
+
+    .graph-section-title {
+
+        gap: 10px;
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .adjacency-grid {
+
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="app">
+
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+
+
+    <aside class="sidebar">
+
+
+
+        <div class="logo">
+
+            <img
+
+                src="/assets/foodflow-logo.png"
+
+                alt="FoodFlow Logo"
+
+                class="foodflow-logo">
+
+        </div>
+
+
+
+        <button
+
+            id="sidebarToggle"
+
+            class="sidebar-toggle">
+
+            ☰
+
+        </button>
+ 
+
+
+
+        <nav>
+
+
+
+           <a href="/index.html" class="nav-item">
+    🏠 Dashboard
+</a>
+
+
+
+            <a href="/orders.html" class="nav-item">
+
+                📦 Orders
+
+            </a>
+
+
+
+            <a href="/orders_add.html" class="nav-item">
+
+                ➕ Add Order
+
+            </a>
+
+
+
+            <a href="/orders_delete.html" class="nav-item">
+
+                ❌ Cancel Order
+
+            </a>
+
+            
+            <a href="/dsa.html"
+
+               class="nav-item active">
+
+                🌳 DSA Operations
+
+            </a>
+
+            <a href="/traverse.html" class="nav-item">
+
+                🔄 Traverse Orders
+
+            </a>
+
+
+
+            <a href="/process_orders.html" class="nav-item">
+
+                ⚙️ Process Orders
+
+            </a>
+
+
+
+            <a href="/cancelled_orders.html" class="nav-item">
+
+                🗑️ Cancelled Orders
+
+            </a>
+
+
+
+
+
+   <a href="/search_sort.html" class="nav-item">
+    🔎 Search & Sort
+</a>
+
+<a href="/algorithms.html" class="nav-item">
+    🧮 Algorithm
+</a>
+
+        </nav>
+
+
+
+        </nav>
+
+
+
+    </aside>
+
+
+
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+
+
+    <main class="main-content">
+
+
+
+        <div class="page-header">
+
+
+
+            <div>
+
+
+
+                <h1>
+
+                    DSA Operations
+
+                </h1>
+
+
+
+                <p>
+
+                    Binary Search Tree and Graph Operations
+
+                </p>
+
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+        <!-- ================= TREE SECTION ================= -->
+
+
+
+        <section class="card">
+
+
+
+            <div class="card-header">
+
+
+
+                <div>
+
+
+
+                    <h2>
+
+                        🌳 Binary Search Tree
+
+                    </h2>
+
+
+
+                    <p>
+
+                        Orders are stored using their Order ID
+
+                        as the BST key.
+
+                    </p>
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+            <div class="dsa-buttons">
+
+
+
+                <button
+
+                    class="green-button"
+
+                    onclick="loadTraversal('inorder')">
+
+
+
+                    ↔️ Inorder
+
+
+
+                </button>
+
+
+
+
+
+                <button
+
+                    class="green-button"
+
+                    onclick="loadTraversal('preorder')">
+
+
+
+                    ⬆️ Preorder
+
+
+
+                </button>
+
+
+
+
+
+                <button
+
+                    class="green-button"
+
+                    onclick="loadTraversal('postorder')">
+
+
+
+                    ⬇️ Postorder
+
+
+
+                </button>
+
+
+
+            </div>
+
+
+
+
+
+            <!-- Traversal Result -->
+
+
+
+            <div
+
+                id="treeResult"
+
+                class="dsa-result">
+
+
+
+                <div class="empty-state">
+
+
+
+                    Select a tree traversal
+
+                    to view the result.
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+        </section>
+
+
+
+
+
+
+
+      
+        <!-- ================= GRAPH SECTION ================= -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>🗺️ Delivery Network Graph</h2>
+
+                <p>
+                    Graph represented using an adjacency list.
+                </p>
+
+            </div>
+
+            <span class="dsa-badge">
+                Adjacency List
+            </span>
+
+        </div>
+
+        <div class="graph-info">
+
+            <div class="graph-info-icon">🔗</div>
+
+            <div>
+
+                <strong>How FoodFlow uses the Graph</strong>
+
+                <p>
+                    Restaurants and delivery locations are represented
+                    as vertices, while delivery connections are represented
+                    as edges.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="graph-section-title">
+
+            <h3>Adjacency List Representation</h3>
+
+            <span id="graphVertexCount">
+                Loading...
+            </span>
+
+        </div>
+
+        <div id="adjacencyListContainer"
+             class="adjacency-list-container">
+
+            <div class="graph-loading">
+                Loading delivery network...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= BFS SECTION ================= -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>🔄 Breadth First Search</h2>
+
+                <p>
+                    Traverse the delivery network starting from a selected vertex.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="bfs-controls">
+
+            <div class="bfs-input-group">
+
+                <label for="bfsInput">
+                    Starting Vertex
+                </label>
+
+                <select id="bfsInput">
+
+                    <option value="">
+                        Select starting vertex
+                    </option>
+
+                </select>
+
+            </div>
+
+            <button
+                class="green-button"
+                onclick="runBFS()">
+
+                🔄 Run BFS
+
+            </button>
+
+        </div>
+
+        <div id="bfsResult"
+             class="dsa-result">
+
+            <div class="empty-state">
+                Select a starting vertex and run BFS.
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    </main>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+
+
+<script>
+
+
+
+    // =====================================================
+
+    // SIDEBAR
+
+    // =====================================================
+
+
+
+    const sidebarToggle =
+
+        document.getElementById("sidebarToggle");
+
+
+
+    const app =
+
+        document.querySelector(".app");
+
+
+
+
+
+    if (sidebarToggle) {
+
+
+
+        sidebarToggle.addEventListener(
+
+            "click",
+
+            function () {
+
+
+
+                app.classList.toggle(
+
+                    "sidebar-collapsed"
+
+                );
+
+
+
+            }
+
+        );
+
+
+
+    }
+
+
+
+
+
+
+
+    // =====================================================
+
+    // TREE TRAVERSALS
+
+    // =====================================================
+
+
+
+    async function loadTraversal(type) {
+
+
+
+        const result =
+
+            document.getElementById(
+
+                "treeResult"
+
+            );
+
+
+
+
+
+        result.innerHTML =
+
+            "<div class='loading'>Loading...</div>";
+
+
+
+
+
+        try {
+
+
+
+            const response =
+
+                await fetch(
+
+                    "/api/tree/" + type
+
+                );
+
+
+
+
+
+            const data =
+
+                await response.json();
+
+
+
+
+
+            if (!data.success) {
+
+
+
+                result.innerHTML =
+
+                    "<div class='error-message'>" +
+
+                    data.message +
+
+                    "</div>";
+
+
+
+                return;
+
+            }
+
+
+
+
+
+            let html = "";
+
+
+
+
+
+            html +=
+
+                "<div class='result-title'>" +
+
+                data.traversal +
+
+                " Traversal" +
+
+                "</div>";
+
+
+
+
+
+            html +=
+
+                "<div class='traversal-list'>";
+
+
+
+
+
+            if (data.orders.length === 0) {
+
+
+
+                html +=
+
+                    "<div class='empty-state'>" +
+
+                    "Tree is empty." +
+
+                    "</div>";
+
+
+
+            } else {
+
+
+
+                data.orders.forEach(
+
+                    function (order, index) {
+
+
+
+                        html +=
+
+                            "<div class='traversal-item'>" +
+
+
+
+                            "<span class='traversal-number'>" +
+
+                            (index + 1) +
+
+                            "</span>" +
+
+
+
+                            "<strong>" +
+
+                            order.orderId +
+
+                            "</strong>" +
+
+
+
+                            "<span>" +
+
+                            order.customerName +
+
+                            "</span>" +
+
+
+
+                            "<span>" +
+
+                            order.restaurant +
+
+                            "</span>" +
+
+
+
+                            "</div>";
+
+
+
+                    }
+
+                );
+
+
+
+            }
+
+
+
+
+
+            html += "</div>";
+
+
+
+
+
+            result.innerHTML =
+
+                html;
+
+
+
+
+
+        } catch (error) {
+
+
+
+            result.innerHTML =
+
+                "<div class='error-message'>" +
+
+                "Unable to load traversal." +
+
+                "</div>";
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+    // =====================================================
+
+    // BST SEARCH
+
+    // =====================================================
+
+
+
+    async function searchTree() {
+
+
+
+        const input =
+
+            document.getElementById(
+
+                "treeSearchInput"
+
+            );
+
+
+
+
+
+        const result =
+
+            document.getElementById(
+
+                "searchResult"
+
+            );
+
+
+
+
+
+        const orderId =
+
+            input.value.trim();
+
+
+
+
+
+        if (!orderId) {
+
+
+
+            result.innerHTML =
+
+                "<div class='error-message'>" +
+
+                "Please enter an Order ID." +
+
+                "</div>";
+
+
+
+            return;
+
+        }
+
+
+
+
+
+        result.innerHTML =
+
+            "<div class='loading'>Searching...</div>";
+
+
+
+
+
+        try {
+
+
+
+            const response =
+
+                await fetch(
+
+                    "/api/tree/search",
+
+                    {
+
+                        method: "POST",
+
+
+
+                        headers: {
+
+                            "Content-Type":
+
+                                "application/x-www-form-urlencoded"
+
+                        },
+
+
+
+                        body:
+
+                            "orderId=" +
+
+                            encodeURIComponent(
+
+                                orderId
+
+                            )
+
+                    }
+
+                );
+
+
+
+
+
+            const data =
+
+                await response.json();
+
+
+
+
+
+            if (!data.success) {
+
+
+
+                result.innerHTML =
+
+                    "<div class='error-message'>" +
+
+                    data.message +
+
+                    "</div>";
+
+
+
+                return;
+
+            }
+
+
+
+
+
+            const order =
+
+                data.order;
+
+
+
+
+
+            result.innerHTML =
+
+
+
+                "<div class='success-message'>" +
+
+
+
+                "<div class='result-title'>" +
+
+                "✅ Order Found" +
+
+                "</div>" +
+
+
+
+                "<div class='order-result-grid'>" +
+
+
+
+                "<div><strong>Order ID</strong><br>" +
+
+                order.orderId +
+
+                "</div>" +
+
+
+
+                "<div><strong>Customer</strong><br>" +
+
+                order.customerName +
+
+                "</div>" +
+
+
+
+                "<div><strong>Restaurant</strong><br>" +
+
+                order.restaurant +
+
+                "</div>" +
+
+
+
+                "<div><strong>Food</strong><br>" +
+
+                order.foodItem +
+
+                "</div>" +
+
+
+
+                "<div><strong>Status</strong><br>" +
+
+                order.status +
+
+                "</div>" +
+
+
+
+                "<div><strong>Total</strong><br>₹" +
+
+                order.total.toFixed(2) +
+
+                "</div>" +
+
+
+
+                "</div>" +
+
+
+
+                "</div>";
+
+
+
+
+
+        } catch (error) {
+
+
+
+            result.innerHTML =
+
+                "<div class='error-message'>" +
+
+                "Unable to search the tree." +
+
+                "</div>";
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+    // =====================================================
+    // GRAPH
+    // =====================================================
+
+    async function loadGraph() {
+
+        const container =
+            document.getElementById("adjacencyListContainer");
+
+        const vertexCount =
+            document.getElementById("graphVertexCount");
+
+        try {
+
+            container.innerHTML =
+                "<div class='graph-loading'>" +
+                "Loading delivery network..." +
+                "</div>";
+
+            const response =
+                await fetch("/api/graph");
+
+            const data =
+                await response.json();
+
+            if (!data.success) {
+
+                container.innerHTML =
+                    "<div class='graph-error'>" +
+                    data.message +
+                    "</div>";
+
+                return;
+            }
+
+            const vertices =
+                data.vertices || [];
+
+            const adjacencyList =
+                data.adjacencyList || {};
+
+            vertexCount.textContent =
+                vertices.length +
+                (vertices.length === 1
+                    ? " vertex"
+                    : " vertices");
+
+            populateBFSVertices(vertices);
+
+            let html = "";
+
+            if (vertices.length === 0) {
+
+                html =
+                    "<div class='graph-empty'>" +
+                    "No vertices available." +
+                    "</div>";
+
+            } else {
+
+                html += "<div class='adjacency-grid'>";
+
+                vertices.forEach(function (vertex) {
+
+                    const neighbors =
+                        adjacencyList[vertex] || [];
+
+                    html +=
+                        "<div class='adjacency-item'>" +
+
+                            "<div class='vertex-name'>" +
+
+                                "<span class='vertex-icon'>●</span>" +
+
+                                escapeHtml(vertex) +
+
+                            "</div>" +
+
+                            "<div class='vertex-connections'>";
+
+                    if (neighbors.length === 0) {
+
+                        html +=
+                            "<span class='no-neighbors'>" +
+                            "No connected vertices" +
+                            "</span>";
+
+                    } else {
+
+                        neighbors.forEach(
+                            function (neighbor, index) {
+
+                                if (index > 0) {
+
+                                    html +=
+                                        "<span class='graph-arrow'>→</span>";
+
+                                }
+
+                                html +=
+                                    "<span class='graph-node'>" +
+                                    escapeHtml(neighbor) +
+                                    "</span>";
+
+                            }
+                        );
+
+                    }
+
+                    html +=
+                            "</div>" +
+                        "</div>";
+
+                });
+
+                html += "</div>";
+
+            }
+
+            container.innerHTML = html;
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            container.innerHTML =
+                "<div class='graph-error'>" +
+                "Unable to load delivery network." +
+                "</div>";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // BFS VERTICES
+    // =====================================================
+
+    function populateBFSVertices(vertices) {
+
+        const select =
+            document.getElementById("bfsInput");
+
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML =
+            "<option value=''>" +
+            "Select starting vertex" +
+            "</option>";
+
+        vertices.forEach(function (vertex) {
+
+            const option =
+                document.createElement("option");
+
+            option.value = vertex;
+            option.textContent = vertex;
+
+            select.appendChild(option);
+
+        });
+
+    }
+
+
+    // =====================================================
+    // BFS
+    // =====================================================
+
+    async function runBFS() {
+
+        const input =
+            document.getElementById("bfsInput");
+
+        const result =
+            document.getElementById("bfsResult");
+
+        const start =
+            input.value.trim();
+
+        if (!start) {
+
+            result.innerHTML =
+                "<div class='error-message'>" +
+                "Please select a starting vertex." +
+                "</div>";
+
+            return;
+
+        }
+
+        result.innerHTML =
+            "<div class='loading'>Running BFS...</div>";
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/graph/bfs?start=" +
+                    encodeURIComponent(start)
+                );
+
+            const data =
+                await response.json();
+
+            if (!data.success) {
+
+                result.innerHTML =
+                    "<div class='error-message'>" +
+                    data.message +
+                    "</div>";
+
+                return;
+
+            }
+
+            let html =
+                "<div class='result-title'>" +
+                "🔄 BFS Traversal" +
+                "</div>";
+
+            html +=
+                "<div class='bfs-start-info'>" +
+                "Starting vertex: <strong>" +
+                escapeHtml(start) +
+                "</strong>" +
+                "</div>";
+
+            html += "<div class='bfs-path'>";
+
+            data.traversal.forEach(
+                function (vertex, index) {
+
+                    html +=
+                        "<div class='bfs-item'>" +
+
+                            "<span class='bfs-number'>" +
+                            (index + 1) +
+                            "</span>" +
+
+                            "<span>" +
+                            escapeHtml(vertex) +
+                            "</span>" +
+
+                        "</div>";
+
+                    if (
+                        index <
+                        data.traversal.length - 1
+                    ) {
+
+                        html +=
+                            "<span class='bfs-arrow'>→</span>";
+
+                    }
+
+                }
+            );
+
+            html += "</div>";
+
+            result.innerHTML = html;
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            result.innerHTML =
+                "<div class='error-message'>" +
+                "Unable to run BFS." +
+                "</div>";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // HTML SAFETY
+    // =====================================================
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    // Automatically load the graph when the page opens.
+
+    loadGraph();</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FoodFlow - Traverse Orders</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+
+       <div class="logo">
+
+    <img src="/assets/foodflow-logo.png"
+         alt="FoodFlow Logo"
+         class="foodflow-logo">
+
+</div>
+ <button id="sidebarToggle"
+                class="sidebar-toggle">
+
+            ☰
+
+        </button>
+
+
+        <nav>
+
+            <a href="/index.html" class="nav-item">
+                🏠 Dashboard
+            </a>
+
+            <a href="/orders.html" class="nav-item">
+                📦 Orders
+            </a>
+
+            <a href="/orders_add.html" class="nav-item">
+                ➕ Add Order
+            </a>
+
+            <a href="/orders_delete.html" class="nav-item">
+                ❌ Cancel Order
+            </a>
+ <a href="/dsa.html" class="nav-item">
+    🌳 DSA Operations
+</a>
+            <a href="/traverse.html"
+               class="nav-item active">
+                🔄 Traverse Orders
+            </a>
+
+            <a href="/process_orders.html"
+               class="nav-item">
+                🚚 Process Orders
+            </a>
+
+            <a href="/cancelled_orders.html"
+               class="nav-item">
+                ↩️ Cancelled Orders
+            </a>
+   <a href="/search_sort.html" class="nav-item">
+    🔎 Search & Sort
+</a>
+
+<a href="/algorithms.html" class="nav-item">
+    🧮 Algorithm
+</a>
+
+        </nav>
+
+
+       
+        </nav>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Traverse Orders</h1>
+                <p>View orders by traversing the linked list</p>
+            </div>
+
+        </header>
+
+
+        <section class="content-card">
+
+            <div class="card-header">
+
+                <div>
+                    <h2>Order Traversal</h2>
+
+                    <p>
+                        Orders are displayed from the head
+                        node to the last node.
+                    </p>
+
+                </div>
+
+                <button
+                        onclick="loadOrders()"
+                        class="green-button">
+
+                    🔄 Traverse
+
+                </button>
+
+            </div>
+
+
+            <div id="orderCards"
+                 class="order-cards">
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+async function loadOrders() {
+
+    const response =
+        await fetch("/api/traverse");
+
+    const orders =
+        await response.json();
+
+
+    const container =
+        document.getElementById("orderCards");
+
+
+    container.innerHTML = "";
+
+
+    orders.forEach((order, index) => {
+
+        container.innerHTML += `
+
+            <div class="order-node">
+
+                <div class="node-number">
+                    ${index + 1}
+                </div>
+
+                <div class="node-content">
+
+                    <h3>${order.orderId}</h3>
+
+                    <p>
+                        ${order.customerName}
+                        -
+                        ${order.foodItem}
+                    </p>
+
+                    <span class="status ${order.status.toLowerCase()}">
+                        ${order.status}
+                    </span>
+
+                </div>
+
+            </div>
+
+        `;
+    });
+}
+
+
+loadOrders();
+
+</script>
+
+</body>
+
+</html>

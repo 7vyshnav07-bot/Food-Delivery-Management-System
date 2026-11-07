@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FoodFlow - Process Orders</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+
+       <div class="logo">
+
+    <img src="/assets/foodflow-logo.png"
+         alt="FoodFlow Logo"
+         class="foodflow-logo">
+
+</div>
+
+ <button id="sidebarToggle"
+                class="sidebar-toggle">
+
+            ☰
+
+        </button>
+
+        <nav>
+
+            <a href="/index.html" class="nav-item">
+                🏠 Dashboard
+            </a>
+
+            <a href="/orders.html" class="nav-item">
+                📦 Orders
+            </a>
+
+            <a href="/orders_add.html" class="nav-item">
+                ➕ Add Order
+            </a>
+
+            <a href="/orders_delete.html" class="nav-item">
+                ❌ Cancel Order
+            </a>
+ <a href="/dsa.html" class="nav-item">
+    🌳 DSA Operations
+</a>
+            <a href="/traverse.html" class="nav-item">
+                🔄 Traverse Orders
+            </a>
+
+            <a href="/process_orders.html"
+               class="nav-item active">
+                🚚 Process Orders
+            </a>
+
+            <a href="/cancelled_orders.html"
+               class="nav-item">
+                ↩️ Cancelled Orders
+            </a>
+   <a href="/search_sort.html" class="nav-item">
+    🔎 Search & Sort
+</a>
+
+<a href="/algorithms.html" class="nav-item">
+    🧮 Algorithm
+</a>
+
+        </nav>
+
+
+       
+
+        </nav>
+ 
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Process Orders</h1>
+                <p>Process pending orders in FIFO order</p>
+            </div>
+
+        </header>
+
+
+        <section class="content-card">
+
+            <div class="card-header">
+
+                <div>
+                    <h2>Pending Queue</h2>
+
+                    <p>
+                        Orders are processed in
+                        First-In, First-Out order.
+                    </p>
+
+                </div>
+
+                <button
+                        onclick="processOrder()"
+                        class="green-button">
+
+                    🚚 Process Next Order
+
+                </button>
+
+            </div>
+
+
+            <div id="message"
+                 class="message">
+            </div>
+
+
+            <div id="queue"
+                 class="queue-list">
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+async function loadQueue() {
+
+    const response =
+        await fetch("/api/orders");
+
+    const orders =
+        await response.json();
+
+
+    const queue =
+        document.getElementById("queue");
+
+
+    queue.innerHTML = "";
+
+
+    const pending =
+        orders.filter(
+            order =>
+                order.status === "Pending"
+        );
+
+
+    pending.forEach((order, index) => {
+
+        queue.innerHTML += `
+
+            <div class="queue-item">
+
+                <div class="queue-position">
+                    ${index + 1}
+                </div>
+
+                <div>
+
+                    <strong>
+                        ${order.orderId}
+                    </strong>
+
+                    <p>
+                        ${order.customerName}
+                        -
+                        ${order.foodItem}
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+    });
+
+
+    if (pending.length === 0) {
+
+        queue.innerHTML =
+            `
+            <div class="empty-state">
+                No pending orders in the queue.
+            </div>
+            `;
+    }
+}
+
+
+async function processOrder() {
+
+    const response =
+        await fetch(
+            "/api/process",
+            {
+                method: "POST"
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    const message =
+        document.getElementById("message");
+
+
+    if (result.success) {
+
+        message.className =
+            "message success-message";
+
+        message.textContent =
+            result.message
+            + " Order: "
+            + result.orderId;
+
+    } else {
+
+        message.className =
+            "message error-message";
+
+        message.textContent =
+            result.message;
+    }
+
+
+    loadQueue();
+}
+
+
+loadQueue();
+
+</script>
+
+</body>
+
+</html>

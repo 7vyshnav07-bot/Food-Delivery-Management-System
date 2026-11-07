@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FoodFlow - Cancel Order</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+    <img src="/assets/foodflow-logo.png"
+         alt="FoodFlow Logo"
+         class="foodflow-logo">
+
+</div>
+ <button id="sidebarToggle"
+                class="sidebar-toggle">
+
+            ☰
+
+        </button>
+
+        <nav>
+
+            <a href="/index.html" class="nav-item">
+                🏠 Dashboard
+            </a>
+
+            <a href="/orders.html" class="nav-item">
+                📦 Orders
+            </a>
+
+            <a href="/orders_add.html" class="nav-item">
+                ➕ Add Order
+            </a>
+
+            <a href="/orders_delete.html"
+               class="nav-item active">
+                ❌ Cancel Order
+            </a>
+             <a href="/dsa.html" class="nav-item">
+    🌳 DSA Operations
+</a>
+
+            <a href="/traverse.html"
+               class="nav-item">
+                🔄 Traverse Orders
+            </a>
+
+            <a href="/process_orders.html"
+               class="nav-item">
+                🚚 Process Orders
+            </a>
+
+            <a href="/cancelled_orders.html"
+               class="nav-item">
+                ↩️ Cancelled Orders
+            </a>
+   <a href="/search_sort.html" class="nav-item">
+    🔎 Search & Sort
+</a>
+
+<a href="/algorithms.html" class="nav-item">
+    🧮 Algorithm
+</a>
+
+        </nav>
+
+
+       
+        </nav>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Cancel Order</h1>
+                <p>Remove an order from the active order list</p>
+            </div>
+
+        </header>
+
+
+        <section class="form-card small-form">
+
+            <div class="warning-box">
+
+                ⚠️
+
+                <div>
+
+                    <strong>
+                        Cancel an order
+                    </strong>
+
+                    <p>
+                        The selected order will be removed
+                        from the active linked list and placed
+                        in the cancelled order stack.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form id="deleteForm">
+
+                <div class="form-group">
+
+                    <label>Order ID</label>
+
+                    <input
+                            type="text"
+                            name="orderId"
+                            placeholder="FD101"
+                            required
+                    >
+
+                </div>
+
+
+                <button
+        type="submit"
+        class="red-button cancel-button">
+
+    ❌ Cancel Order
+
+</button>
+
+            </form>
+
+
+            <div id="message"
+                 class="message">
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+document.getElementById("deleteForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const formData =
+            new FormData(this);
+
+
+        const body =
+            new URLSearchParams(formData);
+
+
+        const response =
+            await fetch(
+                "/api/delete",
+                {
+                    method: "POST",
+                    body: body
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        const message =
+            document.getElementById("message");
+
+
+        if (result.success) {
+
+            message.className =
+                "message success-message";
+
+            message.textContent =
+                result.message;
+
+            this.reset();
+
+        } else {
+
+            message.className =
+                "message error-message";
+
+            message.textContent =
+                result.message;
+        }
+
+    });
+
+</script>
+
+</body>
+
+</html>

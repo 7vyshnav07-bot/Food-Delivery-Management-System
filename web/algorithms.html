@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodFlow | Algorithms</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        :root {
+    --green: #16804a;
+    --green-dark: #105c36;
+    --green-light: #183b2b;
+    --text: #e5eee8;
+    --muted: #a5b8ac;
+    --border: #294536;
+    --surface: #10251b;
+}
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; min-height: 100vh; font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+            background: radial-gradient(ellipse at top left, #183b2b 0%, transparent 48%), #0b1510;
+            line-height: 1.6;
+        }
+        .algorithm-container { width: min(100% - 40px, 1080px); margin: 48px auto; padding: 0; }
+        .algorithm-card {
+            background: var(--surface); border: 1px solid rgba(255,255,255,.65);
+            border-radius: 22px; padding: clamp(22px, 4vw, 38px); margin-bottom: 24px;
+            box-shadow: 0 18px 45px rgba(0,0,0,.14);
+        }
+       .algorithm-card:first-child {
+    background: linear-gradient(135deg, #10251b, #142d20);
+    border-top: 4px solid var(--green);
+}
+        .algorithm-card h1 { margin: 0 0 8px; color: var(--text); font-size: clamp(28px,4vw,38px); font-weight: 750; letter-spacing: -1.2px; line-height: 1.2; }
+        .algorithm-card h2 { margin: 0 0 8px; color: var(--text); font-size: clamp(22px,3vw,28px); letter-spacing: -.5px; }
+        .algorithm-card p { color: var(--muted); margin: 8px 0 20px; }
+        .algorithm-card a { display: inline-flex; align-items: center; gap: 8px; color: var(--green-dark); text-decoration: none; font-weight: 600; margin-top: 10px; }
+        .algorithm-card a:hover { color: var(--green); text-decoration: underline; }
+        .hint { color: var(--muted) !important; font-size: 14px; }
+        .distance-row, .item-row {
+            display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) auto;
+            gap: 14px; align-items: center; margin: 14px 0;
+        }
+        .item-row { grid-template-columns: minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) auto; }
+        .distance-row input, .item-row input, .capacity-input {
+            width: 100%; min-width: 0; height: 49px; padding: 0 15px;
+            border: 1px solid var(--border); border-radius: 11px; background: #fbfdfb;
+            color: #000000; font: inherit; outline: none; transition: border-color .2s, box-shadow .2s;
+        }
+        .distance-row input:focus, .item-row input:focus, .capacity-input:focus {
+            border-color: var(--green); box-shadow: 0 0 0 4px rgba(22,128,74,.12); background: white;
+        }
+        .capacity-field { max-width: 260px; }
+        .algorithm-card button {
+            min-height: 44px; padding: 11px 18px; border: 1px solid transparent;
+            border-radius: 10px; font: inherit; font-size: 14px; font-weight: 650;
+            cursor: pointer; transition: transform .15s, background .15s, box-shadow .15s;
+        }
+        .algorithm-card button:hover { transform: translateY(-1px); }
+        .algorithm-card button:focus-visible { outline: 3px solid #86efac; outline-offset: 3px; }
+        #addButton, #addItemButton { background: #f0f5f1; color: #264b35; border-color: var(--border); }
+        #addButton:hover, #addItemButton:hover { background: #e3eee6; }
+        .run-button { background: var(--green); color: white; box-shadow: 0 5px 12px rgba(22,128,74,.18); }
+        .run-button:hover { background: var(--green-dark); }
+        .remove-button { background: #fff1f0; color: #b42318; border-color: #ffe0dc !important; }
+        .remove-button:hover { background: #ffe3df; }
+        .result {
+            margin-top: 26px; padding: 22px; border: 1px solid #c8e8d2; border-radius: 14px;
+            background: var(--green-light); color: #174d2d !important;
+            font-family: Consolas, "Courier New", monospace; font-size: 14px; line-height: 1.8;
+            white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: auto;
+        }
+        .result[hidden] { display: none; }
+        @media (max-width: 600px) {
+            .algorithm-container { width: min(100% - 24px, 1080px); margin: 20px auto; }
+            .algorithm-card { padding: 20px; border-radius: 16px; }
+            .distance-row, .item-row {
+                grid-template-columns: 1fr; gap: 9px; padding: 12px;
+                border: 1px solid var(--border); border-radius: 12px; background: #fbfdfb;
+            }
+            .distance-row input, .item-row input { background: white; }
+            .distance-row button, .item-row button { width: 100%; }
+            .algorithm-card button { margin-top: 8px; }
+            .capacity-field { max-width: none; }
+        }
+    </style>
+</head>
+<body>
+    <main class="algorithm-container">
+        <div class="algorithm-card">
+            <h1>FoodFlow Algorithms</h1>
+            <p>Explore how algorithms can help with food delivery decisions.</p>
+            <a href="/index.html">← Back to Dashboard</a>
+        </div>
+
+        <section class="algorithm-card">
+            <h2>Greedy Algorithm: Nearest Delivery Option</h2>
+            <p class="hint">Enter delivery options and their distances. The algorithm selects the option with the smallest distance.</p>
+            <div id="distanceRows"></div>
+            <button type="button" id="addButton">+ Add Location</button>
+            <button type="button" class="run-button" id="runButton">Run Greedy Algorithm</button>
+            <div id="result" class="result" hidden aria-live="polite"></div>
+        </section>
+
+        <section class="algorithm-card">
+            <h2>Dynamic Programming: Rider Order Load Optimization</h2>
+            <p class="hint">Select the highest-value combination of food orders without exceeding the rider's carrying capacity. Each order can be selected only once. Values are illustrative order values in rupees.</p>
+
+            <div class="capacity-field">
+                <label for="capacity"><strong>Rider carrying capacity (kg)</strong></label>
+                <input class="capacity-input" id="capacity" type="number" min="0" step="1" value="10">
+            </div>
+
+            <h3>Available food orders</h3>
+            <p class="hint">Enter an order/food name, packed weight in kg, and order value in rupees.</p>
+            <div id="itemRows"></div>
+            <button type="button" id="addItemButton">+ Add Item</button>
+            <button type="button" class="run-button" id="runDpButton">Run Dynamic Programming</button>
+            <div id="dpResult" class="result" hidden aria-live="polite"></div>
+        </section>
+
+        <section class="algorithm-card">
+            <h2>Backtracking: Delivery Slot Assignment</h2>
+            <p class="hint">Assign each order to one of its allowed delivery slots. A slot can be used by only one order. If a choice leads to a conflict, the algorithm backtracks and tries another slot.</p>
+            <p class="hint">Enter allowed slots separated by commas, for example: Lunch A, Lunch B.</p>
+            <div id="backtrackingRows"></div>
+            <button type="button" id="addBacktrackingOrderButton">+ Add Order</button>
+            <button type="button" class="run-button" id="runBacktrackingButton">Run Backtracking</button>
+            <div id="backtrackingResult" class="result" hidden aria-live="polite"></div>
+        </section>
+    </main>
+
+    <script>
+        // Greedy Algorithm UI
+        const rows = document.getElementById("distanceRows");
+        const result = document.getElementById("result");
+
+        function addRow(name = "", distance = "") {
+            const row = document.createElement("div");
+            row.className = "distance-row";
+
+            const nameInput = document.createElement("input");
+            nameInput.placeholder = "Location name";
+            nameInput.setAttribute("aria-label", "Location name");
+            nameInput.value = name;
+            nameInput.required = true;
+
+            const distanceInput = document.createElement("input");
+            distanceInput.type = "number";
+            distanceInput.placeholder = "Distance";
+            distanceInput.setAttribute("aria-label", "Distance");
+            distanceInput.min = "0";
+            distanceInput.step = "any";
+            distanceInput.value = distance;
+            distanceInput.required = true;
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "remove-button";
+            removeButton.textContent = "Remove";
+            removeButton.addEventListener("click", () => row.remove());
+
+            row.append(nameInput, distanceInput, removeButton);
+            rows.appendChild(row);
+        }
+
+        addRow("Koramangala", "2.5");
+        addRow("Indiranagar", "4.2");
+        addRow("Whitefield", "6");
+
+        document.getElementById("addButton").addEventListener("click", () => addRow());
+
+        document.getElementById("runButton").addEventListener("click", async () => {
+            const candidates = [...rows.querySelectorAll(".distance-row")];
+            result.hidden = false;
+
+            if (candidates.length === 0) {
+                result.textContent = "Add at least one delivery option.";
+                return;
+            }
+
+            const options = [];
+            for (const row of candidates) {
+                const inputs = row.querySelectorAll("input");
+                const name = inputs[0].value.trim();
+                const distanceText = inputs[1].value.trim();
+                const distance = Number(distanceText);
+
+                if (!name || distanceText === "" || !Number.isFinite(distance) || distance < 0) {
+                    result.textContent = "Enter a location name and a valid non-negative distance for every row.";
+                    return;
+                }
+                options.push({ name, distance });
+            }
+
+            const encodedOptions = options.map(option =>
+                `${encodeURIComponent(option.name)}:${option.distance}`
+            ).join(",");
+
+            result.textContent = "Running algorithm...";
+            try {
+                const response = await fetch(`/api/algorithm/greedy?options=${encodeURIComponent(encodedOptions)}`);
+                const data = await response.json();
+
+                if (!response.ok || data.success === false) {
+                    throw new Error(data.message || "Algorithm request failed.");
+                }
+
+                if (data.success && data.selected) {
+                    result.textContent = "📍 Nearest Place: " + data.selected.name +
+                        "\n📏 Distance: " + data.selected.distance;
+                } else {
+                    result.textContent = data.message || "No nearest place found.";
+                }
+            } catch (error) {
+                result.textContent = "Could not run the algorithm.\n" + error.message +
+                    "\nCheck that the Java server is running and the API route matches Main.java.";
+            }
+        });
+
+        // Dynamic Programming (0/1 Knapsack) UI
+        const itemRows = document.getElementById("itemRows");
+        const dpResult = document.getElementById("dpResult");
+
+        function addItemRow(name = "", weight = "", value = "") {
+            const row = document.createElement("div");
+            row.className = "item-row";
+
+            const nameInput = document.createElement("input");
+            nameInput.placeholder = "Food / order name";
+            nameInput.setAttribute("aria-label", "Food or order name");
+            nameInput.value = name;
+
+            const weightInput = document.createElement("input");
+            weightInput.type = "number";
+            weightInput.min = "1";
+            weightInput.step = "1";
+            weightInput.placeholder = "Weight (kg)";
+            weightInput.setAttribute("aria-label", "Order weight in kilograms");
+            weightInput.value = weight;
+
+            const valueInput = document.createElement("input");
+            valueInput.type = "number";
+            valueInput.min = "0";
+            valueInput.step = "1";
+            valueInput.placeholder = "Value (₹)";
+            valueInput.setAttribute("aria-label", "Order value in rupees");
+            valueInput.value = value;
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "remove-button";
+            removeButton.textContent = "Remove";
+            removeButton.addEventListener("click", () => row.remove());
+
+            row.append(nameInput, weightInput, valueInput, removeButton);
+            itemRows.appendChild(row);
+        }
+
+        addItemRow("Pizza Order #101", "2", "300");
+        addItemRow("Biryani Order #102", "3", "450");
+        addItemRow("Burger Meal #103", "2", "250");
+
+        document.getElementById("addItemButton").addEventListener("click", () => addItemRow());
+
+        document.getElementById("runDpButton").addEventListener("click", async () => {
+            dpResult.hidden = false;
+            const capacityText = document.getElementById("capacity").value.trim();
+            const capacity = Number(capacityText);
+
+            if (capacityText === "" || !Number.isInteger(capacity) || capacity < 0) {
+                dpResult.textContent = "Enter a valid non-negative whole-number capacity.";
+                return;
+            }
+
+            const items = [];
+            const candidates = [...itemRows.querySelectorAll(".item-row")];
+
+            if (candidates.length === 0) {
+                dpResult.textContent = "Add at least one item.";
+                return;
+            }
+
+            for (const row of candidates) {
+                const inputs = row.querySelectorAll("input");
+                const name = inputs[0].value.trim();
+                const weightText = inputs[1].value.trim();
+                const valueText = inputs[2].value.trim();
+                const weight = Number(weightText);
+                const value = Number(valueText);
+
+                if (!name || weightText === "" || valueText === "" ||
+                    !Number.isInteger(weight) || weight <= 0 ||
+                    !Number.isInteger(value) || value < 0) {
+                    dpResult.textContent = "For every item, enter a name, a positive whole-number weight, and a non-negative whole-number value.";
+                    return;
+                }
+                items.push({ name, weight, value });
+            }
+
+            const params = new URLSearchParams();
+            params.set("capacity", String(capacity));
+            params.set("items", items.map(item =>
+                `${item.name}:${item.weight}:${item.value}`
+            ).join(","));
+
+            dpResult.textContent = "Running Dynamic Programming...";
+            try {
+                const response = await fetch(`/api/algorithm/dp?${params.toString()}`);
+                const data = await response.json();
+
+                if (!response.ok || data.success === false) {
+                    throw new Error(data.message || "Dynamic Programming request failed.");
+                }
+
+                const selected = Array.isArray(data.selectedItems) ? data.selectedItems : [];
+                const lines = [
+                    "Algorithm: " + (data.algorithm || "Rider Order Load Optimization (Dynamic Programming)"),
+                    "Rider capacity: " + data.capacity + " kg",
+                    "Selected order weight: " + data.totalWeight + " kg",
+                    "Total selected order value: ₹" + data.totalValue,
+                    "",
+                    "Selected food orders:"
+                ];
+
+                if (selected.length === 0) {
+                    lines.push("No items selected.");
+                } else {
+                    selected.forEach(item => {
+                        lines.push(`• ${item.name} — ${item.weight} kg, ₹${item.value}`);
+                    });
+                }
+                dpResult.textContent = lines.join("\n");
+            } catch (error) {
+                dpResult.textContent = "Could not run Dynamic Programming.\n" + error.message +
+                    "\nCheck that the Java server is running and /api/algorithm/dp matches Main.java.";
+            }
+        });
+
+
+        // Backtracking: assign each order to a unique allowed delivery slot.
+        const backtrackingRows = document.getElementById("backtrackingRows");
+        const backtrackingResult = document.getElementById("backtrackingResult");
+
+        function addBacktrackingRow(name = "", slots = "") {
+            const row = document.createElement("div");
+            row.className = "distance-row";
+            const nameInput = document.createElement("input");
+            nameInput.placeholder = "Order name / ID";
+            nameInput.setAttribute("aria-label", "Order name or ID");
+            nameInput.value = name;
+            const slotsInput = document.createElement("input");
+            slotsInput.placeholder = "Allowed slots, comma-separated";
+            slotsInput.setAttribute("aria-label", "Allowed delivery slots");
+            slotsInput.value = slots;
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "remove-button";
+            removeButton.textContent = "Remove";
+            removeButton.addEventListener("click", () => row.remove());
+            row.append(nameInput, slotsInput, removeButton);
+            backtrackingRows.appendChild(row);
+        }
+
+        addBacktrackingRow("Order #201", "Slot A, Slot B");
+        addBacktrackingRow("Order #202", "Slot A");
+        addBacktrackingRow("Order #203", "Slot B, Slot C");
+        document.getElementById("addBacktrackingOrderButton").addEventListener("click", () => addBacktrackingRow());
+
+        document.getElementById("runBacktrackingButton").addEventListener("click", async () => {
+            backtrackingResult.hidden = false;
+            const rowsToAssign = [...backtrackingRows.querySelectorAll(".distance-row")];
+            if (rowsToAssign.length === 0) {
+                backtrackingResult.textContent = "Add at least one order.";
+                return;
+            }
+            const orders = [];
+            for (const row of rowsToAssign) {
+                const inputs = row.querySelectorAll("input");
+                const name = inputs[0].value.trim();
+                const slots = inputs[1].value.split(",").map(s => s.trim()).filter(Boolean);
+                if (!name || slots.length === 0) {
+                    backtrackingResult.textContent = "Enter an order name and at least one allowed slot for every order.";
+                    return;
+                }
+                if (/[;:]/.test(name) || slots.some(slot => /[;:|]/.test(slot))) {
+                    backtrackingResult.textContent = "Avoid semicolons or colons in order names and semicolons, colons, or vertical bars in slot names.";
+                    return;
+                }
+                orders.push({ name, slots });
+            }
+            const encodedOrders = orders.map(order => `${order.name}:${order.slots.join("|")}`).join(";");
+            const params = new URLSearchParams();
+            params.set("orders", encodedOrders);
+            backtrackingResult.textContent = "Searching for a conflict-free assignment...";
+            try {
+                const response = await fetch(`/api/algorithm/backtracking?${params.toString()}`);
+                const data = await response.json();
+                if (!response.ok || data.success === false) throw new Error(data.message || "Backtracking request failed.");
+                if (!data.possible) {
+                    backtrackingResult.textContent = data.message || "No conflict-free assignment exists.";
+                    return;
+                }
+                const lines = [
+                    "Algorithm: " + (data.algorithm || "Backtracking - Delivery Slot Assignment"),
+                    "Orders assigned: " + data.assignedCount,
+                    "",
+                    "Assignment:"
+                ];
+                data.assignments.forEach(a => lines.push(`• ${a.order} → ${a.slot}`));
+                backtrackingResult.textContent = lines.join("\n");
+            } catch (error) {
+                backtrackingResult.textContent = "Could not run Backtracking.\n" + error.message +
+                    "\nCheck that the Java server is running and /api/algorithm/backtracking is registered in Main.java.";
+            }
+        });
+
+    </script>
+</body>
+</html>
